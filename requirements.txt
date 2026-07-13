@@ -1,0 +1,22 @@
+# ── Core hiện tại (đang chạy) ──
+opencv-python
+opencv-contrib-python
+dlib
+torch
+torchvision
+ultralytics
+numpy
+
+# ── Phát triển tiếp: multi-student tracking ──
+# ByteTrack đã tích hợp sẵn trong ultralytics, gọi qua model.track(tracker="bytetrack.yaml")
+# → KHÔNG cần cài thêm gói riêng cho ByteTrack
+
+# ── Phát triển tiếp: hand/pose detection (thay thế MediaPipe) ──
+# Dùng model YOLOv8-pose có sẵn trong ultralytics để lấy toạ độ tay/khớp
+# → KHÔNG cần mediapipe (không hỗ trợ Python 3.13, đã gặp lỗi ở trên)
+
+# ── Phát triển tiếp: fine-tune model điện thoại giấu ──
+roboflow          # tải/quản lý dataset đã gán nhãn để train lại YOLO
+
+# ── Phát triển tiếp: dashboard xem lại bằng chứng cho giáo viên ──
+flask             # web dashboard nhẹ, đủ dùng cho 1 phòng/PC, không cần Django nặng nề
