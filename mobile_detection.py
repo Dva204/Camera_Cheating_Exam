@@ -3,7 +3,7 @@ import torch
 from ultralytics import YOLO
 
 # Load trained YOLO model
-model = YOLO("model/best_yolov8.pt")
+model = YOLO("model/best_yolov12.pt")
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 

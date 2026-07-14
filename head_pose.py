@@ -105,21 +105,16 @@ def process_head_pose(frame, calibrated_angles=None):
         YAW_THRESHOLD = 12
         ROLL_THRESHOLD = 5
 
-        # Determine head direction
-        if abs(yaw - yaw_offset) <= YAW_THRESHOLD and abs(pitch - pitch_offset) <= PITCH_THRESHOLD and abs(roll - roll_offset) <= ROLL_THRESHOLD:
-            current_state = "Looking at Screen"
-        elif yaw < yaw_offset - 15:
-            current_state = "Looking Left"
-        elif yaw > yaw_offset + 15:
-            current_state = "Looking Right"
-        elif pitch > pitch_offset + 10:
-            current_state = "Looking Up"
-        elif pitch < pitch_offset - 10:
-            current_state = "Looking Down"
-        elif abs(roll - roll_offset) > 7:
+        # Determine head direction - always resolve explicitly, never fall back to
+        # previous_state, so the system can't get stuck in a non-screen state.
+        if abs(yaw - yaw_offset) > YAW_THRESHOLD:
+            current_state = "Looking Left" if yaw < yaw_offset else "Looking Right"
+        elif abs(pitch - pitch_offset) > PITCH_THRESHOLD:
+            current_state = "Looking Down" if pitch < pitch_offset else "Looking Up"
+        elif abs(roll - roll_offset) > ROLL_THRESHOLD:
             current_state = "Tilted"
         else:
-            current_state = previous_state
+            current_state = "Looking at Screen"
 
         previous_state = current_state
         head_direction = current_state

@@ -6,12 +6,12 @@ import numpy as np
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("model/shape_predictor_68_face_landmarks.dat")
 
-def detect_pupil(eve_region):
-    gray_eye = cv2.cvtColor(eve_region, cv2.COLOR_BGR2GRAY)
+def detect_pupil(eye_region):
+    gray_eye = cv2.cvtColor(eye_region, cv2.COLOR_BGR2GRAY)
     blurred_eye = cv2.GaussianBlur(gray_eye, (7, 7), 0)
     _, threshold_eye = cv2.threshold(blurred_eye, 50, 255, cv2.THRESH_BINARY_INV)
     contours, _ = cv2.findContours(threshold_eye, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+    
     if contours:
         pupil_contour = max(contours, key=cv2.contourArea)
         px, py, pw, ph = cv2.boundingRect(pupil_contour)
@@ -21,19 +21,19 @@ def detect_pupil(eve_region):
 def process_eye_movement(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = detector(gray)
-    gaze_direction = "Looking Centor"
+    gaze_direction = "Looking at Screen"
 
     for face in faces:
         landmarks = predictor(gray, face)
-
+        
         # Extract left and right eye landmarks
         left_eye_points = np.array([(landmarks.part(n).x, landmarks.part(n).y) for n in range(36, 42)])
         right_eye_points = np.array([(landmarks.part(n).x, landmarks.part(n).y) for n in range(42, 48)])
-
+        
         # Get bounding rectangles for the eyes
         left_eye_rect = cv2.boundingRect(left_eye_points)
         right_eye_rect = cv2.boundingRect(right_eye_points)
-
+        
         # Extract eye regions
         left_eye = frame[left_eye_rect[1]:left_eye_rect[1] + left_eye_rect[3], left_eye_rect[0]:left_eye_rect[0] + left_eye_rect[2]]
         right_eye = frame[right_eye_rect[1]:right_eye_rect[1] + right_eye_rect[3], right_eye_rect[0]:right_eye_rect[0] + right_eye_rect[2]]
@@ -71,8 +71,6 @@ def process_eye_movement(frame):
             elif norm_ly > 0.5 and norm_ry > 0.5:
                 gaze_direction = "Looking Down"
             else:
-                gaze_direction = "Looking Center"
+                gaze_direction = "Looking at Screen"
     
     return frame, gaze_direction
-
-        
